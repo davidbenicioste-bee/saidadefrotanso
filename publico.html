@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMI Frota | Registrar Ocorrência</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <style>
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    .grid-2col { display: grid; grid-template-columns: 1fr 0.9fr; gap: 28px; }
+    @media (max-width: 900px) { .grid-2col { grid-template-columns: 1fr; } }
+
+    /* Sucesso */
+    .success-box    { display: none; text-align: center; padding: 32px; }
+    .success-icon   {
+      width: 70px; height: 70px; background: #E8F5E9; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px; font-size: 32px; color: #2E7D32;
+    }
+    .protocol-card  {
+      background: #FAFAF8; border: 1px solid #EAEAE2;
+      border-radius: 12px; padding: 16px; margin: 20px 0;
+    }
+    .protocol-number {
+      font-size: 22px; font-weight: 700;
+      color: #FFD43B; font-family: monospace; letter-spacing: 1px;
+    }
+
+    /* Consulta */
+    .result-card {
+      background: #FAFAF8; border-radius: 12px; padding: 16px;
+      margin-top: 16px; display: none; border: 1px solid #EAEAE2;
+    }
+    .response-item {
+      background: #FFFFFF; padding: 12px; border-radius: 8px;
+      margin-top: 12px; border: 1px solid #EAEAE2;
+    }
+    .search-box { display: flex; gap: 12px; margin-bottom: 20px; }
+    .search-box input { flex: 1; }
+    .info-row {
+      display: flex; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid #EAEAE2; font-size: 13px;
+    }
+    .info-label { color: #8B8B85; }
+    .info-value { color: #1A1A18; font-weight: 500; text-align: right; }
+
+    .ultima-item {
+      padding: 10px 0; border-bottom: 1px solid #EAEAE2;
+      cursor: pointer; transition: background .15s;
+    }
+    .ultima-item:hover { background: #FAFAF8; }
+    .admin-link {
+      color: #FFD43B; text-decoration: none; font-size: 13px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: 8px; transition: background .2s;
+    }
+    .admin-link:hover { background: rgba(255,212,59,0.1); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fas fa-bus"></i></div>
+      <div class="logo-text">
+        <h1>CMI FROTA</h1>
+        <p>Sistema de Registro de Ocorrências · Grupo NSÓ</p>
+      </div>
+    </div>
+    <a href="/login" class="admin-link"><i class="fas fa-lock"></i> Área Administrativa</a>
+  </div>
+
+  <div class="container">
+    <div class="grid-2col">
+
+      <!-- ── Card: Registrar ── -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-clipboard-list"></i> Registrar Ocorrência</h2>
+          <p>Preencha os dados do incidente de saída da frota</p>
+        </div>
+
+        <!-- Formulário -->
+        <div class="card-body" id="form-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Data <span class="required">*</span></label>
+              <input type="date" id="data">
+            </div>
+            <div class="form-group">
+              <label>Empresa <span class="required">*</span></label>
+              <select id="empresa">
+                <option value="">Selecionar</option>
+                <option>AVUL</option>
+                <option>VCCL</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Nome do Operador / Escala <span class="required">*</span></label>
+            <input type="text" id="escala" placeholder="Nome completo">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Garagem / Núcleo <span class="required">*</span></label>
+              <select id="garagem">
+                <option value="">Selecionar</option>
+                <option>G 1</option>
+                <option>G 4</option>
+                <option>G 5</option>
+                <option>Caieiras</option>
+                <option>Franco</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Veículo <span class="required">*</span></label>
+              <input type="text" id="veiculo" placeholder="00000 / 20000 / 22000" maxlength="5">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Classificação <span class="required">*</span></label>
+            <select id="motivo">
+              <option value="">Selecionar classificação</option>
+              <option>Acidente</option>
+              <option>Alagamento</option>
+              <option>Atraso do Reservado</option>
+              <option>Carro Fora da Fila</option>
+              <option>Colaborador em Disciplina</option>
+              <option>Defeito de Funilaria</option>
+              <option>Defeito Elétrico</option>
+              <option>Defeito Mecânico</option>
+              <option>Defeito na Catraca</option>
+              <option>Defeito no Validador</option>
+              <option>Defeito no Elevador</option>
+              <option>Falha Operacional do Plantão</option>
+              <option>Falta de Carro</option>
+              <option>Falta de Colaborador</option>
+              <option>Operação PAESE</option>
+              <option>Pedido pela Manutenção</option>
+              <option>Pneu Furado</option>
+              <option>Por conta da Manutenção</option>
+              <option>Por conta do Motorista</option>
+              <option>Verificando Avarias</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Descrição da Ocorrência</label>
+            <textarea id="descricao" placeholder="Descreva o ocorrido: horário, pessoas envolvidas, detalhes relevantes..."></textarea>
+          </div>
+
+          <div id="formError" class="error-msg">
+            <i class="fas fa-exclamation-circle"></i> Preencha todos os campos obrigatórios.
+          </div>
+          <button class="btn" id="btnRegistrar" onclick="registrarOcorrencia()">
+            <i class="fas fa-paper-plane"></i> Registrar Ocorrência
+          </button>
+        </div>
+
+        <!-- Tela de sucesso -->
+        <div id="successBox" class="success-box">
+          <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+          <h3 style="color:#1A1A18;font-size:20px">Ocorrência Registrada!</h3>
+          <p style="color:#6B6B65;margin-top:8px">Guarde o número de protocolo abaixo</p>
+          <div class="protocol-card">
+            <div style="font-size:12px;color:#8B8B85;margin-bottom:6px">Número de Protocolo</div>
+            <div class="protocol-number" id="protocoloDisplay"></div>
+          </div>
+          <div id="summaryBox"></div>
+          <button class="btn btn-outline" style="margin-top:16px" onclick="novoRegistro()">
+            <i class="fas fa-plus"></i> Nova Ocorrência
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Card: Consultar ── -->
+      <div class="card">
+        <div class="card-header">
+          <h2><i class="fas fa-search"></i> Acompanhar Ocorrência</h2>
+          <p>Informe o número do protocolo</p>
+        </div>
+        <div class="card-body">
+          <div class="search-box">
+            <input type="text" id="consultaProto" placeholder="Ex: CMI-20250415-4821">
+            <button class="btn" style="width:auto;padding:12px 20px" onclick="consultarProtocolo()">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+          <div id="resultadoConsulta" class="result-card"></div>
+
+          <div class="info-box" style="margin-top:20px">
+            <div class="info-box-title"><i class="fas fa-info-circle"></i> Como funciona</div>
+            <div class="info-box-text">
+              Ao registrar, você recebe um protocolo único. Use-o aqui para acompanhar
+              o status e visualizar as respostas da administração.
+            </div>
+          </div>
+
+          <hr>
+
+          <div style="font-weight:600;font-size:13px;color:#1A1A18;margin-bottom:12px">
+            <i class="fas fa-clock"></i> Últimas ocorrências
+          </div>
+          <div id="listaOcorrencias" style="font-size:13px;color:#6B6B65">
+            <div style="text-align:center;padding:20px">Carregando...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/publico.js') }}"></script>
+</body>
+</html>

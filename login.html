@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMI Frota | Login Administrativo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1A1A18 0%, #2D2D2A 100%);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-container { max-width: 420px; width: 100%; }
+    .login-card      { background: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,.3); }
+
+    .login-header    { background: linear-gradient(135deg, #FFD43B, #FFC107); padding: 32px; text-align: center; }
+    .header-icon     {
+      width: 60px; height: 60px; background: #1A1A18;
+      border-radius: 15px; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 15px; font-size: 28px; color: #FFD43B;
+    }
+    .login-header h2 { color: #1A1A18; font-size: 22px; margin-bottom: 5px; }
+    .login-header p  { color: #4A4A45; font-size: 13px; }
+
+    .login-body      { padding: 32px; }
+    .form-group      { margin-bottom: 20px; }
+    label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: #4A4A45; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
+    }
+    input {
+      width: 100%; padding: 12px 14px;
+      border: 1px solid #D4D4CC; border-radius: 10px;
+      font-size: 14px; font-family: 'Inter', sans-serif; color: #1A1A18;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input:focus { outline: none; border-color: #FFD43B; box-shadow: 0 0 0 3px rgba(255,212,59,.12); }
+    .btn {
+      width: 100%; padding: 14px;
+      background: #FFD43B; border: none; border-radius: 10px;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s, transform .15s;
+    }
+    .btn:hover  { background: #E8C42E; transform: translateY(-1px); }
+    .btn:active { transform: scale(.98); }
+    .error-msg {
+      background: #FFEBEE; color: #E54D2E;
+      padding: 12px; border-radius: 8px;
+      font-size: 13px; margin-bottom: 20px; display: none;
+    }
+    .info-text { text-align: center; margin-top: 20px; font-size: 12px; color: #8B8B85; }
+    .info-text a { color: #B8860B; text-decoration: none; }
+    .info-text a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="header-icon"><i class="fas fa-shield-alt"></i></div>
+        <h2>Acesso Administrativo</h2>
+        <p>CMI Frota — Gestão de Ocorrências</p>
+      </div>
+      <div class="login-body">
+        <div id="errorMsg" class="error-msg"></div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="email" placeholder="admin@cmi.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password"
+                 onkeydown="if(event.key==='Enter') fazerLogin()">
+        </div>
+        <button class="btn" onclick="fazerLogin()">
+          <i class="fas fa-sign-in-alt"></i> Entrar
+        </button>
+        <div class="info-text">
+          <i class="fas fa-lock"></i> Acesso restrito à administração ·
+          <a href="/">Voltar ao formulário</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function fazerLogin() {
+      const email    = document.getElementById('email').value.trim();
+      const senha    = document.getElementById('senha').value;
+      const errorDiv = document.getElementById('errorMsg');
+
+      if (!email || !senha) {
+        errorDiv.textContent  = 'Preencha todos os campos';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      const btn = document.querySelector('.btn');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+      btn.disabled  = true;
+
+      try {
+        const res    = await fetch('/api/login', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ email, senha }),
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          window.location.href = result.redirect;
+        } else {
+          errorDiv.textContent   = result.message;
+          errorDiv.style.display = 'block';
+          btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
+          btn.disabled  = false;
+        }
+      } catch {
+        errorDiv.textContent   = 'Erro de conexão. Tente novamente.';
+        errorDiv.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
+        btn.disabled  = false;
+      }
+    }
+  </script>
+</body>
+</html>
