@@ -294,13 +294,14 @@ def _criar_admin_padrao():
 
 if __name__ == '__main__':
     _criar_admin_padrao()
-
+    
+    # Pega a porta definida pelo Render ou usa 8000 como fallback
+    porta = int(os.environ.get('PORT', 8000))
+    
     print("=" * 55)
     print("  CMI FROTA — Sistema de Gestão de Ocorrências")
     print("=" * 55)
-    print("  Público : http://localhost:8000")
-    print("  Admin   : http://localhost:8000/login")
-    print("  Usuário : admin@cmi.com  |  Senha: admin123")
+    print(f"  Rodando na porta: {porta}")
     print("=" * 55)
-
-    app.run(debug=True, host='0.0.0.0', port=8000)
+    
+    app.run(debug=False, host='0.0.0.0', port=porta)
